@@ -1,0 +1,106 @@
+# Teams Bilingual Captions - configuration
+# This file mirrors the built-in defaults in src/config.py.
+# Anything omitted here falls back to those defaults, so the app runs
+# even if this file is missing (e.g. in --simulate mode).
+
+audio:
+  backend: screencapturekit   # screencapturekit | blackhole | simulated
+  sample_rate: 16000
+  channels: 1
+  chunk_ms: 200
+
+translate:
+  source_lang: en
+  target_lang: zh
+
+ui:
+  mode: console               # console | qt
+  history_lines: 3
+  show_partial_en: true
+  translate_partial: false    # only translate FINAL sentences (cheaper, stabler)
+
+# -------------------------------------------------------------------
+# Quota accounts: tracked independently so providers can SHARE them
+# (e.g. Deepgram credit is shared by providers #2 and #3).
+# kinds: monthly_audio (seconds) | credit_usd | monthly_chars
+# warn_at / hard_stop_at are fractions of the limit.
+# -------------------------------------------------------------------
+quota_accounts:
+  azure_audio:
+    kind: monthly_audio
+    limit_seconds: 18000        # 5 hours, Azure Speech F0
+    reset: rolling_30d
+    warn_at: [0.90, 0.95, 0.98]
+    hard_stop_at: 0.98
+
+  deepgram_credit:
+    kind: credit_usd
+    limit: 200                  # one-time signup credit (does not reset)
+    usd_per_audio_second: 0.000128   # ~ $0.0077/min Nova streaming
+    reset: never
+    warn_at: [0.90, 0.95]
+    hard_stop_at: 0.95
+
+  azure_translator_chars:
+    kind: monthly_chars
+    limit: 2000000              # Azure Translator F0
+    reset: rolling_30d
+    warn_at: [0.90, 0.95]
+    hard_stop_at: 0.95
+
+  deepl_chars:
+    kind: monthly_chars
+    limit: 500000               # DeepL API Free
+    reset: rolling_30d
+    warn_at: [0.90, 0.95]
+    hard_stop_at: 0.95
+
+# -------------------------------------------------------------------
+# Providers. Each declares which quota accounts it consumes.
+# audio_accounts  -> charged per audio second (STT side)
+# char_accounts   -> charged per translated character (translate side)
+# An integrated provider (Azure) has only audio_accounts.
+# -------------------------------------------------------------------
+providers:
+  azure_speech_translation:
+    type: integrated
+    audio_accounts: [azure_audio]
+    char_accounts: []
+
+  deepgram_azure_translator:
+    type: split
+    stt: deepgram
+    translate: azure_translator
+    audio_accounts: [deepgram_credit]
+    char_accounts: [azure_translator_chars]
+
+  deepgram_deepl:
+    type: split
+    stt: deepgram
+    translate: deepl
+    audio_accounts: [deepgram_credit]
+    char_accounts: [deepl_chars]
+
+  local_lightweight:
+    type: local
+    enabled: false
+    audio_accounts: []          # local = no metered quota
+    char_accounts: []
+
+# Ordered preference. Failover walks this list top-to-bottom.
+provider_chain:
+  - azure_speech_translation
+  - deepgram_azure_translator
+  - deepgram_deepl
+  # - local_lightweight        # uncomment to allow offline fallback
+
+failover:
+  enabled: true
+  preemptive_switch_at: 0.95    # start warming up next provider at 95%
+  switch_timeout_s: 300         # 5-minute window to switch seamlessly
+  switch_on: sentence_boundary  # switch only between final sentences
+
+billing_safety:
+  allow_paid_fallback: false    # NEVER spend money automatically
+  require_no_autoload: true     # refuse to start if Deepgram auto-reload may charge
+  stop_before_exhaustion: true

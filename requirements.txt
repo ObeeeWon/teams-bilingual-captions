@@ -1,0 +1,27 @@
+# Core (simulation mode runs with ZERO third-party deps; these enable real use)
+
+# Config (optional: app falls back to built-in defaults if missing)
+pyyaml>=6.0
+
+# Audio capture from system output / BlackHole
+sounddevice>=0.4.6
+numpy>=1.24
+
+# Subtitle overlay window (optional: console UI works without it)
+PyQt6>=6.6
+
+# --- Cloud provider SDKs (install only the ones you use) ---
+
+# Azure Speech Translation (provider #1, integrated STT+translation)
+azure-cognitiveservices-speech>=1.40
+
+# Deepgram streaming STT (provider #2 / #3)
+deepgram-sdk>=3.7
+
+# Azure Translator / DeepL (translation for split providers)
+requests>=2.31
+deepl>=1.18
+
+# --- Local fallback (optional, heavier) ---
+# sherpa-onnx>=1.10        # streaming English STT
+# ctranslate2>=4.0         # Opus-MT / NLLB translation

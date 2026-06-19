@@ -1,0 +1,21 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+keys.env
+*.log
+
+# Local quota state (tracks free-tier usage; do not commit)
+.state/
+quota_state.json
+
+# Local models (downloaded separately)
+assets/models/
+
+# Secrets
+secrets.yaml
+config.local.yaml
+
+.DS_Store
+.pytest_cache/
