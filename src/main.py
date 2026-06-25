@@ -71,7 +71,7 @@ async def run(args) -> None:
     ui_mode = getattr(args, "ui", "console")
     audio = getattr(args, "audio", None)
     speed = getattr(args, "speed", 1.0)
-    duration = getattr(args, "duration", 120.0)
+    duration = getattr(args, "duration", None)
 
     cfg = load_config(config_path)
     if fast:
@@ -159,8 +159,8 @@ def main() -> None:
                    help="shrink free quotas so failover/stop happen in ~15s")
     p.add_argument("--speed", type=float, default=1.0,
                    help="simulated audio speed multiplier (e.g. 4 = 4x faster)")
-    p.add_argument("--duration", type=float, default=120.0,
-                   help="max run seconds (simulation stops earlier at hard stop)")
+    p.add_argument("--duration", type=float, default=None,
+                   help="auto-stop after N seconds (default: run until Ctrl+C)")
     p.add_argument("--ui", choices=["console", "qt"], default="console")
     p.add_argument("--audio", choices=["mic", "blackhole", "screencapturekit"],
                    default=None,
