@@ -7,13 +7,16 @@ Real-time **EN → ZH** subtitles for Microsoft Teams on macOS.
 ```bash
 git clone <your-repo-url> teams-bilingual-captions
 cd teams-bilingual-captions
-./scripts/setup.sh          # first time: venv + deps + keys template
+./scripts/setup.sh          # first time only
 # edit keys.env — paste Azure keys (NOT synced via git)
-./run.sh --audio mic        # test with microphone
+./start.sh                  # one-click start (microphone)
 ```
 
-Running `python3 -m src.main` **automatically** installs missing Python deps and
-creates `keys.env` from template on first launch.
+Or **double-click** in Finder:
+- `Start Captions.command` — microphone test
+- `Start Teams Captions.command` — Teams system audio (BlackHole)
+
+Running `python3 -m src.main` or `./run.sh` also works; `start.sh` is the simplest entry.
 
 ## Mac mini → MacBook workflow
 
@@ -30,8 +33,10 @@ creates `keys.env` from template on first launch.
 
 | Command | Purpose |
 |---------|---------|
-| `./scripts/setup.sh` | Full first-time install (venv, pip, keys template, hints) |
-| `./run.sh` | Bootstrap + run (recommended) |
+| **`./start.sh`** | **One-click start (mic, recommended)** |
+| `./start.sh teams` | Start with BlackHole system audio |
+| `./scripts/setup.sh` | Full first-time install (venv, pip, keys template) |
+| `./run.sh` | Bootstrap + run (pass any `src.main` flags) |
 | `python3 -m src.main --check-keys` | Verify Azure keys & SDK |
 | `python3 -m src.main --audio mic` | Live captions from microphone |
 | `python3 -m src.main --audio blackhole` | Captions from Teams system audio |
