@@ -20,8 +20,13 @@ python3 scripts/setup_keys.py      # 填入你自己申请的 Azure Key
 ```
 
 > **重要：** 每人需**自己注册 Azure 免费 Speech 资源**，不能共用 Key。  
-> Azure 注册：https://azure.microsoft.com/free/  
-> 创建 Speech (F0)：https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices
+> **申请链接汇总：** [`docs/FREE_API_LINKS.zh.md`](docs/FREE_API_LINKS.zh.md)
+
+| 步骤 | 链接 |
+|------|------|
+| Azure 注册 | https://azure.microsoft.com/free/ |
+| 创建 Speech (F0) | https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices |
+| Deepgram（可选） | https://console.deepgram.com/signup |
 
 ---
 

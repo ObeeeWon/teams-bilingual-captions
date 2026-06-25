@@ -39,7 +39,8 @@ if [[ ! -f "keys.env" ]]; then
   echo ""
   echo "[!] 新用户请先配置 Azure Key："
   echo "    1. 阅读 docs/GETTING_STARTED.zh.md"
-  echo "    2. 运行 python3 scripts/setup_keys.py"
+  echo "    2. 申请链接 docs/FREE_API_LINKS.zh.md"
+  echo "    3. 运行 python3 scripts/setup_keys.py"
   echo "    或编辑 $ROOT/keys.env"
   exit 1
 fi

@@ -13,9 +13,12 @@ KEYS = ROOT / "keys.env"
 
 def main() -> None:
     print("=== Teams Bilingual Captions — 密钥配置 ===\n")
-    print(f"配置文件: {KEYS}\n")
-    print("从 Azure portal 打开 teams-speech → Keys and Endpoint")
-    print("复制 KEY 1 和 Region，粘贴到下面。\n")
+    print("还没有 Key？先看申请链接: docs/FREE_API_LINKS.zh.md\n")
+    print("必填 — Azure Speech (Free F0, 5h/月):")
+    print("  注册: https://azure.microsoft.com/free/")
+    print("  创建: https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices")
+    print("  → Keys and Endpoint 复制 KEY 1 和 Region\n")
+    print(f"将写入: {KEYS}\n")
 
     speech_key = input("AZURE_SPEECH_KEY (KEY 1): ").strip()
     region = input("AZURE_SPEECH_REGION [canadacentral]: ").strip() or "canadacentral"

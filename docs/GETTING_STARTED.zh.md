@@ -40,22 +40,27 @@ chmod +x start.sh scripts/setup.sh
 
 ## 第三步：申请 Azure Speech（每人独立账号）
 
-**不能共用朋友的 Key**，否则额度算在他账上，且存在安全风险。
+**不能共用朋友的 Key**。完整链接表（含可用性说明）：[`docs/FREE_API_LINKS.zh.md`](FREE_API_LINKS.zh.md)
 
-1. 注册 Azure（个人 Outlook/Gmail 即可）：  
-   https://azure.microsoft.com/free/
+1. **注册 Azure**（个人 Outlook/Gmail）：  
+   - https://azure.microsoft.com/free/  
+   - 备用直达：https://signup.azure.com/signup?offer=ms-azr-0044p  
 
-2. 创建 **Speech** 资源（必须选 **Free F0**）：  
-   https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices  
+2. **创建 Speech 资源**（必须选 **Free F0**）：  
+   - https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices  
    - Region 建议：`canadacentral` 或离你最近的区域  
-   - Resource group 随意新建，例如 `my-captions`
+   - Resource group 随意新建，例如 `my-captions`  
+   - 定价说明：https://azure.microsoft.com/pricing/details/cognitive-services/speech-services/
 
 3. 进入资源 → **Keys and Endpoint**，复制：
-   - `KEY 1` → 填入 `keys.env` 的 `AZURE_SPEECH_KEY`
-   - `Location/Region` → 填入 `AZURE_SPEECH_REGION`（如 `canadacentral`）
+   - `KEY 1` → `keys.env` 的 `AZURE_SPEECH_KEY`
+   - `Location/Region` → `AZURE_SPEECH_REGION`（如 `canadacentral`）
 
-4. （可选）创建 **Translator** 备用资源（Free F0）：  
-   https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation
+4. **（可选）** Azure Translator 备用（Free F0，200 万字符/月）：  
+   - https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation  
+
+5. **（可选）** Deepgram STT 备用（$200 赠金，无需信用卡）：  
+   - https://console.deepgram.com/signup  
 
 ### 填写密钥（二选一）
 
@@ -147,10 +152,13 @@ ZH  大家好……
 
 ## 相关链接
 
-| 服务 | 注册 / 创建 |
-|------|-------------|
-| Azure 免费账号 | https://azure.microsoft.com/free/ |
-| Azure Speech (F0) | https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices |
-| Azure Translator (F0，可选) | https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation |
-| Deepgram $200 赠金（可选） | https://console.deepgram.com/signup |
-| BlackHole | `brew install blackhole-2ch` |
+完整列表与可用性说明：**[`docs/FREE_API_LINKS.zh.md`](FREE_API_LINKS.zh.md)**  
+维护者可运行 `./scripts/check_links.sh` 重新检测。
+
+| 服务 | 申请链接 |
+|------|----------|
+| Azure 免费注册 | https://azure.microsoft.com/free/ |
+| Azure Speech 创建 (F0) | https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices |
+| Azure Translator 创建 (F0，可选) | https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation |
+| Deepgram 注册（可选） | https://console.deepgram.com/signup |
+| DeepL API（可选） | https://www.deepl.com/pro-api |
