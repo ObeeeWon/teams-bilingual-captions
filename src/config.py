@@ -17,7 +17,7 @@ DEFAULT_CONFIG: Dict[str, Any] = {
         "channels": 1,
         "chunk_ms": 200,
     },
-    "translate": {"source_lang": "en", "target_lang": "zh"},
+    "translate": {"source_lang": "en-US", "target_lang": "zh"},
     "ui": {
         "mode": "console",
         "history_lines": 3,

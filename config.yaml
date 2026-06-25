@@ -10,7 +10,7 @@ audio:
   chunk_ms: 200
 
 translate:
-  source_lang: en
+  source_lang: en-US
   target_lang: zh
 
 ui:

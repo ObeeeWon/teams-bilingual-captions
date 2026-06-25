@@ -21,6 +21,21 @@ except ImportError:
     _HAS_SDK = False
 
 
+def _azure_recognition_language(lang: str) -> str:
+    """STT input needs a BCP-47 locale, e.g. en-US (not bare 'en')."""
+    if "-" in lang:
+        return lang
+    return {"en": "en-US", "zh": "zh-CN"}.get(lang.lower(), lang)
+
+
+def _azure_translation_target(lang: str) -> str:
+    """Translation targets use short codes, e.g. zh (not zh-Hans)."""
+    lang = lang.lower()
+    if lang.startswith("zh"):
+        return "zh"
+    return lang.split("-")[0]
+
+
 class AzureSpeechTranslationProvider(ProviderAdapter):
     def __init__(self, provider_id: str, audio_accounts: List[str],
                  char_accounts: List[str], source_lang: str = "en",
@@ -28,8 +43,8 @@ class AzureSpeechTranslationProvider(ProviderAdapter):
         self.id = provider_id
         self.audio_accounts = audio_accounts
         self.char_accounts = char_accounts
-        self._source = source_lang
-        self._target = target_lang
+        self._source = _azure_recognition_language(source_lang)
+        self._target = _azure_translation_target(target_lang)
         self._on_caption: Optional[CaptionCallback] = None
         self._key = os.getenv("AZURE_SPEECH_KEY", "").strip()
         self._region = os.getenv("AZURE_SPEECH_REGION", "").strip()
@@ -60,6 +75,8 @@ class AzureSpeechTranslationProvider(ProviderAdapter):
             subscription=self._key, region=self._region)
         tcfg.speech_recognition_language = self._source
         tcfg.add_target_language(self._target)
+        print(f"[azure] 识别语言={self._source}  翻译目标={self._target}  区域={self._region}",
+              flush=True)
 
         fmt = speechsdk.audio.AudioStreamFormat(
             samples_per_second=16000, bits_per_sample=16, channels=1)
@@ -86,7 +103,9 @@ class AzureSpeechTranslationProvider(ProviderAdapter):
         en = evt.result.text or ""
         if not en:
             return
-        zh = evt.result.translations.get(self._target, "")
+        zh = evt.result.translations.get(self._target) or ""
+        if not zh and evt.result.translations:
+            zh = next(iter(evt.result.translations.values()), "")
         self._emit(Caption(text_en=en, text_zh=zh, is_final=False, provider_id=self.id))
 
     def _on_recognized(self, evt) -> None:
@@ -95,7 +114,9 @@ class AzureSpeechTranslationProvider(ProviderAdapter):
         en = evt.result.text or ""
         if not en:
             return
-        zh = evt.result.translations.get(self._target, "")
+        zh = evt.result.translations.get(self._target) or ""
+        if not zh and evt.result.translations:
+            zh = next(iter(evt.result.translations.values()), "")
         self._emit(Caption(text_en=en, text_zh=zh, is_final=True, provider_id=self.id))
 
     def _on_canceled(self, evt) -> None:

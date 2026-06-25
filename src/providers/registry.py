@@ -26,8 +26,8 @@ def build_provider(pid: str, cfg: Dict[str, Any], simulate: bool = False,
     if ptype == "integrated":
         return AzureSpeechTranslationProvider(
             pid, audio_accounts, char_accounts,
-            source_lang=tr.get("source_lang", "en"),
-            target_lang="zh-Hans",
+            source_lang=tr.get("source_lang", "en-US"),
+            target_lang=tr.get("target_lang", "zh"),
         )
     if ptype == "split":
         return SplitProvider(
