@@ -64,13 +64,22 @@ def build_ui(mode: str):
 
 
 async def run(args) -> None:
-    cfg = load_config(args.config)
-    if args.fast:
+    simulate = getattr(args, "simulate", False)
+    reset_quota = getattr(args, "reset_quota", False)
+    fast = getattr(args, "fast", False)
+    config_path = getattr(args, "config", "config.yaml")
+    ui_mode = getattr(args, "ui", "console")
+    audio = getattr(args, "audio", None)
+    speed = getattr(args, "speed", 1.0)
+    duration = getattr(args, "duration", 120.0)
+
+    cfg = load_config(config_path)
+    if fast:
         cfg = _apply_fast_overrides(cfg)
 
-    state_path = ".state/quota_state.sim.json" if args.simulate else ".state/quota_state.json"
+    state_path = ".state/quota_state.sim.json" if simulate else ".state/quota_state.json"
     quota = QuotaManager(cfg["quota_accounts"], state_path=state_path)
-    if args.simulate or args.reset_quota:
+    if simulate or reset_quota:
         for acc in cfg["quota_accounts"]:
             quota.reset_account(acc)
 
@@ -80,20 +89,20 @@ async def run(args) -> None:
         preemptive_at=cfg["failover"]["preemptive_switch_at"],
         switch_timeout_s=cfg["failover"]["switch_timeout_s"],
     )
-    notifier = Notifier(use_macos_notifications=not args.simulate)
-    ui = build_ui(args.ui)
+    notifier = Notifier(use_macos_notifications=not simulate)
+    ui = build_ui(ui_mode)
 
-    spp = 2.0 if args.fast else 3.0
-    warmup_delay = 0.05 if args.fast else 1.0
+    spp = 2.0 if fast else 3.0
+    warmup_delay = 0.05 if fast else 1.0
 
     def factory(pid: str):
         return build_provider(
-            pid, cfg, simulate=args.simulate,
+            pid, cfg, simulate=simulate,
             sim_seconds_per_sentence=spp,
         )
 
     # Inject a short warmup for the simulated demo so switches are snappy.
-    if args.simulate:
+    if simulate:
         from .providers.simulation import SimulatedProvider
         orig = SimulatedProvider.__init__
 
@@ -104,10 +113,10 @@ async def run(args) -> None:
         SimulatedProvider.__init__ = patched  # type: ignore
 
     orch = Orchestrator(cfg, quota, guard, controller, notifier, ui, factory)
-    audio_backend = args.audio or ("mic" if not args.simulate else None)
-    source = make_source(cfg, simulate=args.simulate, speed=args.speed,
+    audio_backend = audio or ("mic" if not simulate else None)
+    source = make_source(cfg, simulate=simulate, speed=speed,
                          backend=audio_backend)
-    await orch.run(source, max_seconds=args.duration)
+    await orch.run(source, max_seconds=duration)
 
 
 def check_keys() -> int:
@@ -156,6 +165,8 @@ def main() -> None:
     p.add_argument("--audio", choices=["mic", "blackhole", "screencapturekit"],
                    default=None,
                    help="audio source (default: mic for quick test; set blackhole for Teams)")
+    p.add_argument("--reset-quota", action="store_true",
+                   help="reset local free-tier usage counters before starting")
     args = p.parse_args()
 
     if args.check_keys:
